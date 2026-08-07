@@ -5,6 +5,14 @@ sdk: org.gnome.Platform
 base: io.gitlab.android_translation_layer.BaseApp
 base-version: stable
 command: gbox.sh
+add-remotes:
+  - name: atl-repo
+    url: https://lobanokivan11.github.io/flatpak-atl-repo/atl-repo.flatpakrepo
+    gpg-import: repo.gpg
+build-options:
+  default-remotes:
+    - atl-repo
+    - flathub
 finish-args:
   - --share=network
   - --share=ipc
@@ -13,6 +21,14 @@ finish-args:
   - --device=dri
   - --socket=pulseaudio
 modules:
+  - name: fetch-gpg-key
+    buildsystem: simple
+    build-commands:
+      - cp repo.gpg /run/build/fetch-gpg-key/gpg-extracted.gpg || true
+    sources:
+      - type: file
+        url: https://lobanokivan11.github.io/flatpak-atl-repo/repo.gpg
+        sha256: 7e29718f8508abfddeca9dac72133509518affe4563540608ac92f6e89a5f206
   - name: gbox
     buildsystem: simple
     build-commands:
