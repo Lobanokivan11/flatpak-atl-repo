@@ -98,6 +98,39 @@ jobs:
           pattern: flatpak-repo-*
           merge-multiple: true
 
+      - name: Import Protected GPG Key
+        id: import_gpg
+        run: |
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          gpg-connect-agent reloadagent /bye
+          gpgconf --kill gpg-agent
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -d | gpg --batch --import
+          KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5}')
+          echo "key_id=$KEY_ID" >> $GITHUB_OUTPUT
+
+      - name: Prime GPG Agent Cache
+        run: |
+          echo "prime_cache" | gpg --batch --yes --pinentry-mode loopback \
+            --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
+            --local-user ${{ steps.import_gpg.outputs.key_id }} \
+            --sign > /dev/null
+
+      - name: Create Flatpakrepo File
+        run: |
+          GPG_BASE64=$(gpg --export ${{ steps.import_gpg.outputs.key_id }} | base64 | tr -d '\n')
+          cat <<EOF > combined_repo/atl-repo.flatpakrepo
+          [Flatpak Repo]
+          Title=A Custom Repository with Android Translation Layer Apps
+          Url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          Homepage=https://github.com/{{ github.repository }}
+          Comment=A Custom Repository with Android Translation Layer Apps
+          Description=A Custom Repository with Android Translation Layer Apps
+          GPGKey=$GPG_BASE64
+          EOF
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
