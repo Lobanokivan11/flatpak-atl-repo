@@ -125,9 +125,7 @@ jobs:
               cp -uR "$folder"/* combined_repo/ || true
             fi
           done
-          flatpak build-update-repo --gpg-sign=${{ steps.import_gpg.outputs.key_id }} \
-            --gpg-args="--pinentry-mode loopback --passphrase ${{ secrets.GPG_PASSPHRASE }}" \
-            combined_repo
+          flatpak build-update-repo --gpg-sign=${{ steps.import_gpg.outputs.key_id }} combined_repo
 
       - name: Export Public Key
         run: |
