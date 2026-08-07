@@ -125,7 +125,6 @@ jobs:
             --default-branch=stable \
             --arch=x86_64 \
             --ccache \
-            --extra-collection-id \
             --install-deps-from=flathub \
             --disable-rofiles-fuse \
             --local-packages=local_atl_repo \
