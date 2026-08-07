@@ -26,7 +26,7 @@ jobs:
       - name: Find all YML manifests
         id: set-matrix
         run: |
-          MANIFESTS=$(find . -maxdepth 1 -name "*.yml" -printf '"%p", ' | sed 's/, $//')
+          MANIFESTS=$(find . -maxdepth 1 -name "*.yml" -printf '"%P", ' | sed 's/, $//')
           echo "matrix=[$MANIFESTS]" >> $GITHUB_OUTPUT
 
   build-flatpak:
@@ -43,6 +43,7 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+
       - name: Import Protected GPG Key
         id: import_gpg
         run: |
@@ -73,10 +74,6 @@ jobs:
           gpg-sign: ${{ steps.import_gpg.outputs.key_id }}
         env:
           GPG_TTY: /dev/null
-      - name: Export Public Key
-        run: |
-          gpg --export --armor ${{ steps.import_gpg.outputs.key_id }} > public_repo/repo.gpg
-
       - name: Upload Temporary Repo Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -87,16 +84,17 @@ jobs:
   deploy:
     needs: build-flatpak
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      options: --privileged
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
       - name: Download All Repo Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: combined_repo
+          path: all_artifacts
           pattern: flatpak-repo-*
-          merge-multiple: true
 
       - name: Import Protected GPG Key
         id: import_gpg
@@ -117,13 +115,30 @@ jobs:
             --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
             --local-user ${{ steps.import_gpg.outputs.key_id }} \
             --sign > /dev/null
+      - name: Combine and Rebuild Repository Index
+        run: |
+          mkdir combined_repo
+          flatpak repoinit --title="Android Translation Layer Apps" combined_repo
+          for folder in all_artifacts/flatpak-repo-*/; do
+            if [ -d "$folder" ]; then
+              echo "Importing apps from $folder..."
+              cp -uR "$folder"/* combined_repo/ || true
+            fi
+          done
+          flatpak build-update-repo --gpg-sign=${{ steps.import_gpg.outputs.key_id }} \
+            --gpg-args="--pinentry-mode loopback --passphrase ${{ secrets.GPG_PASSPHRASE }}" \
+            combined_repo
+
+      - name: Export Public Key
+        run: |
+          gpg --export --armor ${{ steps.import_gpg.outputs.key_id }} > combined_repo/repo.gpg
 
       - name: Create Flatpakrepo File
         run: |
           GPG_BASE64=$(gpg --export ${{ steps.import_gpg.outputs.key_id }} | base64 | tr -d '\n')
           cat <<EOF > combined_repo/atl-repo.flatpakrepo
           [Flatpak Repo]
-          Title=A Custom Repository with Android Translation Layer Apps
+          Title=Android Translation Layer Apps
           Url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
           Homepage=https://github.com/${{ github.repository_owner }}
           Comment=A Custom Repository with Android Translation Layer Apps
