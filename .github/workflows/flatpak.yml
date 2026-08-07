@@ -15,6 +15,30 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  build-baseapp:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      options: --privileged
+    outputs:
+      has_baseapp: "true"
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Build BaseApp Dependency
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: io.gitlab.android_translation_layer.BaseApp.yml
+          build-bundle: false
+          repo-dir: baseapp_repo
+          branch: stable
+      - name: Upload BaseApp Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: baseapp-core-package
+          path: baseapp_repo/
+          retention-days: 1
   find-manifests:
     runs-on: ubuntu-latest
     outputs:
@@ -26,11 +50,11 @@ jobs:
       - name: Find all YML manifests
         id: set-matrix
         run: |
-          MANIFESTS=$(find . -maxdepth 1 -name "*.yml" -printf '"%P", ' | sed 's/, $//')
+          MANIFESTS=$(find . -maxdepth 1 -name "*.yml" ! -name "*BaseApp*" -printf '"%P", ' | sed 's/, $//')
           echo "matrix=[$MANIFESTS]" >> $GITHUB_OUTPUT
 
   build-flatpak:
-    needs: find-manifests
+    needs: [build-baseapp, find-manifests]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -53,12 +77,15 @@ jobs:
           echo "key_id=$KEY_ID" >> $GITHUB_OUTPUT
           gpg --export --armor $KEY_ID > repo.gpg
           gpg --export --armor $KEY_ID > /tmp/atl-repo.gpg
-
-      - name: Add Custom Remote Repository with GPG
+      - name: Download Fresh Local BaseApp
+        uses: actions/download-artifact@v4
+        with:
+          name: baseapp-core-package
+          path: local_atl_repo
+      - name: Add Local ATL Repo with High Priority
         run: |
-          REPO_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          flatpak remote-add --user --no-gpg-verify --if-not-exists atl-repo $REPO_URL
-          flatpak remote-modify --user --prio=10 atl-repo
+          flatpak remote-add --user --if-not-exists --no-gpg-verify atl-repo-local local_atl_repo/
+          flatpak remote-modify --user --priority=10 atl-repo-local
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
@@ -79,7 +106,7 @@ jobs:
           retention-days: 1
 
   merge-and-sign:
-    needs: build-flatpak
+    needs: [build-baseapp, build-flatpak]
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
@@ -87,7 +114,11 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
+      - name: Download BaseApp
+        uses: actions/download-artifact@v4
+        with:
+          name: baseapp-core-package
+          path: all_artifacts/baseapp
       - name: Download All Repo Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -118,12 +149,17 @@ jobs:
         run: |
           mkdir combined_repo
           ostree --repo=combined_repo init --mode=archive
+          if [ -d "all_artifacts/baseapp" ]; then
+            echo "Merging BaseApp into final repository..."
+            cp -uR all_artifacts/baseapp/* combined_repo/ || true
+          fi
           for folder in all_artifacts/flatpak-repo-*/; do
             if [ -d "$folder" ]; then
               echo "Importing apps from $folder..."
               cp -uR "$folder"/* combined_repo/ || true
             fi
           done
+          rm combined_repo/summary combined_repo/summary.sig
           flatpak build-update-repo --gpg-sign=${{ steps.import_gpg.outputs.key_id }} combined_repo
 
       - name: Export Public Key
