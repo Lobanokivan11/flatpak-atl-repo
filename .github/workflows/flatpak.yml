@@ -181,7 +181,6 @@ jobs:
               cp -uR "$folder"/* combined_repo/ || true
             fi
           done
-          rm combined_repo/summary combined_repo/summary.sig
           flatpak build-update-repo --gpg-sign=${{ steps.import_gpg.outputs.key_id }} combined_repo
 
       - name: Export Public Key
