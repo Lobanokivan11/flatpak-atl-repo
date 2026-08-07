@@ -55,11 +55,12 @@ jobs:
           KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5}')
           echo "key_id=$KEY_ID" >> $GITHUB_OUTPUT
 
-      - name: Cache Key Passphrase
+      - name: Prime GPG Agent Cache
         run: |
-          KEY_ID=$(echo "${{ steps.import_gpg.outputs.key_id }}" | tr '[:lower:]' '[:upper:]')
-          KEYGRIP=$(gpg --with-keygrip --list-secret-keys $KEY_ID | grep -A 1 "sec" | grep "Keygrip" | awk '{print $3}')
-          /usr/lib/gnupg/gpg-preset-passphrase --preset --passphrase "${{ secrets.GPG_PASSPHRASE }}" $KEYGRIP
+          echo "prime_cache" | gpg --batch --yes --pinentry-mode loopback \
+            --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
+            --local-user ${{ steps.import_gpg.outputs.key_id }} \
+            --sign > /dev/null
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
