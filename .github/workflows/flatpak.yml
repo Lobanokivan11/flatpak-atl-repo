@@ -36,12 +36,21 @@ jobs:
         manifest: ${{ fromJson(needs.find-manifests.outputs.matrix) }}
       fail-fast: false
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
       options: --privileged
 
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+      - name: Import Protected GPG Key
+        id: import_gpg
+        run: |
+          mkdir -p ~/.gnupg
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpgconf --kill gpg-agent
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -d | gpg --batch --import
+          KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5}')
+          echo "key_id=$KEY_ID" >> $GITHUB_OUTPUT
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
@@ -50,6 +59,14 @@ jobs:
           cache-key: flatpak-builder-${{ matrix.manifest }}-${{ github.sha }}
           build-bundle: false
           repo-dir: public_repo
+          gpg-sign: ${{ steps.import_gpg.outputs.key_id }}
+        env:
+          GPG_TTY: /dev/null
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Export Public Key
+        run: |
+          gpg --export --armor ${{ steps.import_gpg.outputs.key_id }} > public_repo/repo.gpg
+
       - name: Upload Temporary Repo Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -63,6 +80,7 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+
       - name: Download All Repo Artifacts
         uses: actions/download-artifact@v4
         with:
