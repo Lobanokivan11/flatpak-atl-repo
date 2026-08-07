@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=GBox
+Exec=gbox.sh --uri %u
+Comment=GBox means Google Box that helps users use Google apps (unofficial port)
+X-Purism-FormFactor=Workstation;Mobile;
+StartupNotify=true
+Icon=com.gbox.android

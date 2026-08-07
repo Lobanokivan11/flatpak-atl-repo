@@ -1,0 +1,63 @@
+app-id: com.gbox.android
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Platform
+base: io.gitlab.android_translation_layer.BaseApp
+base-version: stable
+command: gbox.sh
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --socket=pulseaudio
+modules:
+  - name: gbox
+    buildsystem: simple
+    build-commands:
+      - install -D GBox-1.8.3.32-1080332-7848795-website.apk /app/share/GBox.apk
+      - install -D gbox.sh /app/bin/cloudstream.sh
+      - install -D com.gbox.android.desktop /app/share/applications/com.gbox.android.desktop
+      - install -D logo_02.png /app/share/icons/hicolor/512x512/apps/com.gbox.android.png
+      - install -D com.gbox.android.metainfo.xml /app/share/metainfo/com.gbox.android.metainfo.xml
+    sources:
+      - type: file
+        url: https://agile-files.gboxlab.com/GBox-1.8.3.32-1080332-7848795-website.apk
+        sha256: 6fcbaafbcb033b9e0cc03a5d6acaa54ca6b6cb06d16ce3c2d0657d7addfba257
+      - type: file
+        url: https://gboxlab.com/img/logo_02.png
+        sha256: 578bb187a8a9fbc56b6293acd3803aa93e675d7481d220d01ac9443c3b8798ff
+      - type: file
+        path: cloudstream/cloudstream.sh
+      - type: file
+        path: cloudstream/com.lagradost.cloudstream3.desktop
+      - type: file
+        path: cloudstream/com.lagradost.cloudstream3.metainfo.xml
+
+  - name: run-dex2oat
+    buildsystem: simple
+    build-options:
+      append-ld-library-path: /app/lib/art:/app/lib
+      arch:
+        x86_64:
+          env:
+            arch: x86_64
+        aarch64:
+          env:
+            arch: arm64
+    build-commands:
+      - mkdir -p /app/share/oat/$arch
+      - dex2oat --dex-file=/app/share/GBox.apk --oat-file=/app/share/oat/$arch/GBox.odex --host
+      - chmod +x /app/share/oat/$arch/GBox.odex
+      - mv /app/share/GBox.apk GBox.apk
+      - zip -d GBox.apk "classes*.dex"
+      - mv GBox.apk /app/share/GBox.apk
+
+  - name: remove-dex2oat
+    buildsystem: simple
+    build-commands:
+      - rm /app/lib/art/libart-compiler.so
+      - rm /app/lib/art/libart-dexlayout.so
+      - rm /app/bin/dex2oat
+      - rm /app/bin/dalvikvm

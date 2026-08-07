@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.gbox.android</id>
+
+  <name>GBox</name>
+  <summary>GBox means Google Box that helps users use Google apps (unofficial port)</summary>
+
+  <metadata_license>MIT</metadata_license>
+  <project_license>AAL</project_license>
+
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+
+  <description>
+    <p>
+      GBox means Google Box that helps users use Google apps (unofficial port)
+    </p>
+  </description>
+
+  <launchable type="desktop-id">com.gbox.android.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://appimg-dra.dbankcdn.com/application/screenshut1/10169/2f392a73e3bf4e608cc79122de076f96.jpg</image>
+    </screenshot>
+    <screenshot>
+      <image>https://appimg-dra.dbankcdn.com/application/screenshut2/10169/2f392a73e3bf4e608cc79122de076f96.jpg</image>
+    </screenshot>
+    <screenshot>
+      <image>https://appimg-dra.dbankcdn.com/application/screenshut3/10169/2f392a73e3bf4e608cc79122de076f96.jpg</image>
+    </screenshot>
+  </screenshots>
+</component>
