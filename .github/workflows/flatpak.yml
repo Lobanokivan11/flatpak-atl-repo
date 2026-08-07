@@ -58,7 +58,7 @@ jobs:
         run: |
           REPO_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
           flatpak remote-add --user --if-not-exists --no-gpg-verify atl-repo $REPO_URL
-          flatpak remote-modify --user --priority=10 atl-repo
+          flatpak remote-modify --user --prio=10 atl-repo
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
