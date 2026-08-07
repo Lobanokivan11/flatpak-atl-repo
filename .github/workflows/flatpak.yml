@@ -25,7 +25,15 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
+      - name: Setup Flatpak Builder Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .flatpak-builder/
+            ~/.ccache
+          key: ${{ runner.os }}-flatpak-${{ hashFiles('io.gitlab.android_translation_layer.BaseApp.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-flatpak-
       - name: Build BaseApp Dependency
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
@@ -86,7 +94,15 @@ jobs:
         run: |
           flatpak remote-add --user --if-not-exists --no-gpg-verify atl-repo-local local_atl_repo/
           flatpak remote-modify --user --priority=10 atl-repo-local
-
+      - name: Setup Flatpak Builder Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .flatpak-builder/
+            ~/.ccache
+          key: ${{ runner.os }}-flatpak-${{ matrix.manifest }}
+          restore-keys: |
+            ${{ runner.os }}-flatpak-
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
