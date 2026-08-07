@@ -1,6 +1,7 @@
 name: Build and Host Flatpak Repo
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
 
