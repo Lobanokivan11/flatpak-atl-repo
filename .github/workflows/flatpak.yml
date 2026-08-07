@@ -34,16 +34,20 @@ jobs:
           key: ${{ runner.os }}-flatpak-${{ hashFiles('io.gitlab.android_translation_layer.BaseApp.yml') }}
           restore-keys: |
             ${{ runner.os }}-flatpak-
-      - name: Build BaseApp Dependency
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
-        with:
-          manifest-path: io.gitlab.android_translation_layer.BaseApp.yml
-          build-bundle: false
-          ccache: true
-          cache-key: flatpak-builder-baseapp-${{ github.sha }}
-          restore-keys: flatpak-builder-baseapp-
-          repo-dir: baseapp_repo
-          branch: stable
+      - name: Build BaseApp Dependency (Direct CLI)
+        run: |
+          mkdir -p .flatpak-builder
+          flatpak-builder \
+            --repo=baseapp_repo \
+            --force-clean \
+            --state-dir=.flatpak-builder \
+            --default-branch=stable \
+            --arch=x86_64 \
+            --ccache \
+            build_dir_baseapp \
+            io.gitlab.android_translation_layer.BaseApp.yml
+        env:
+          GPG_TTY: /dev/null
       - name: Upload BaseApp Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -109,18 +113,23 @@ jobs:
           key: ${{ runner.os }}-flatpak-${{ matrix.manifest }}
           restore-keys: |
             ${{ runner.os }}-flatpak-
-      - name: Build Flatpak
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
-        with:
-          manifest-path: ${{ matrix.manifest }}
-          cache-key: flatpak-builder-${{ matrix.manifest }}-${{ github.sha }}
-          restore-keys: flatpak-builder-${{ matrix.manifest }}-
-          ccache: true
-          build-bundle: false
-          branch: stable
-          repo-dir: public_repo
+      - name: Build Flatpak App (Forced Local BaseApp)
+        run: |
+          mkdir -p .flatpak-builder
+          flatpak-builder \
+            --repo=public_repo \
+            --force-clean \
+            --state-dir=.flatpak-builder \
+            --default-branch=stable \
+            --arch=x86_64 \
+            --ccache \
+            --extra-collection-id \
+            --local-packages=local_atl_repo \
+            build_dir \
+            ${{ matrix.manifest }}
         env:
           GPG_TTY: /dev/null
+
 
       - name: Upload Temporary Repo Artifact
         uses: actions/upload-artifact@v4
