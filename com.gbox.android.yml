@@ -17,7 +17,7 @@ modules:
     buildsystem: simple
     build-commands:
       - install -D GBox-1.8.3.32-1080332-7848795-website.apk /app/share/GBox.apk
-      - install -D gbox.sh /app/bin/cloudstream.sh
+      - install -D gbox.sh /app/bin/gbox.sh
       - install -D com.gbox.android.desktop /app/share/applications/com.gbox.android.desktop
       - install -D logo_02.png /app/share/icons/hicolor/512x512/apps/com.gbox.android.png
       - install -D com.gbox.android.metainfo.xml /app/share/metainfo/com.gbox.android.metainfo.xml
@@ -29,11 +29,11 @@ modules:
         url: https://gboxlab.com/img/logo_02.png
         sha256: 578bb187a8a9fbc56b6293acd3803aa93e675d7481d220d01ac9443c3b8798ff
       - type: file
-        path: cloudstream/cloudstream.sh
+        path: gbox/gbox.sh
       - type: file
-        path: cloudstream/com.lagradost.cloudstream3.desktop
+        path: gbox/com.gbox.android.desktop
       - type: file
-        path: cloudstream/com.lagradost.cloudstream3.metainfo.xml
+        path: gbox/com.gbox.android.metainfo.xml
 
   - name: run-dex2oat
     buildsystem: simple
