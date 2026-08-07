@@ -117,8 +117,10 @@ jobs:
             ${{ runner.os }}-flatpak-
       - name: Build Flatpak App (Forced Local BaseApp)
         run: |
-          flatpak build-import-bundle --user local_atl_repo
-          flatpak build-import-bundle --system local_atl_repo
+          flatpak remote-add --user --if-not-exists --no-gpg-verify local-source local_atl_repo/
+          flatpak install --user -y local-source io.gitlab.android_translation_layer.BaseApp
+          flatpak remote-add --system --if-not-exists --no-gpg-verify local-source local_atl_repo/
+          flatpak install --system -y local-source io.gitlab.android_translation_layer.BaseApp
           mkdir -p .flatpak-builder
           flatpak-builder \
             --repo=public_repo \
