@@ -39,6 +39,9 @@ jobs:
         with:
           manifest-path: io.gitlab.android_translation_layer.BaseApp.yml
           build-bundle: false
+          ccache: true
+          cache-key: flatpak-builder-baseapp-${{ github.sha }}
+          restore-keys: flatpak-builder-baseapp-
           repo-dir: baseapp_repo
           branch: stable
       - name: Upload BaseApp Artifact
@@ -108,6 +111,8 @@ jobs:
         with:
           manifest-path: ${{ matrix.manifest }}
           cache-key: flatpak-builder-${{ matrix.manifest }}-${{ github.sha }}
+          restore-keys: flatpak-builder-${{ matrix.manifest }}-
+          ccache: true
           build-bundle: false
           branch: stable
           repo-dir: public_repo
