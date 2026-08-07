@@ -44,6 +44,7 @@ jobs:
             --default-branch=stable \
             --arch=x86_64 \
             --ccache \
+            --install-deps-from=flathub \
             build_dir_baseapp \
             io.gitlab.android_translation_layer.BaseApp.yml
         env:
@@ -124,6 +125,7 @@ jobs:
             --arch=x86_64 \
             --ccache \
             --extra-collection-id \
+            --install-deps-from=flathub \
             --local-packages=local_atl_repo \
             build_dir \
             ${{ matrix.manifest }}
