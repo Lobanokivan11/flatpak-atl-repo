@@ -128,7 +128,7 @@ jobs:
           [Flatpak Repo]
           Title=Android Translation Layer Apps
           Url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
-          Homepage=https://github.com/${{ github.repository_owner }}
+          Homepage=https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}
           Comment=A Custom Repository with Android Translation Layer Apps
           Description=A Custom Repository with Android Translation Layer Apps
           GPGKey=$GPG_BASE64
