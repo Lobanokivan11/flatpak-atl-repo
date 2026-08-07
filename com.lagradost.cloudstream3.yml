@@ -17,10 +17,10 @@ modules:
     buildsystem: simple
     build-commands:
       - install -D 4.8.0.apk /app/share/CloudStream.apk
-      - install -D cloudstream.sh /app/bin/cloudstream.sh
-      - install -D com.lagradost.cloudstream3.desktop /app/share/applications/com.lagradost.cloudstream3.desktop
+      - install -D cloudstream/cloudstream.sh /app/bin/cloudstream.sh
+      - install -D cloudstream/com.lagradost.cloudstream3.desktop /app/share/applications/com.lagradost.cloudstream3.desktop
       - install -D ic_launcher-playstore.png /app/share/icons/hicolor/512x512/apps/com.lagradost.cloudstream3.png
-      - install -D com.lagradost.cloudstream3.metainfo.xml /app/share/metainfo/com.lagradost.cloudstream3.metainfo.xml
+      - install -D cloudstream/com.lagradost.cloudstream3.metainfo.xml /app/share/metainfo/com.lagradost.cloudstream3.metainfo.xml
     sources:
       - type: file
         url: https://github.com/recloudstream/cloudstream/releases/download/v4.8.0/4.8.0.apk
