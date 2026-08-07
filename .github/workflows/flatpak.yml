@@ -98,6 +98,8 @@ jobs:
           flatpak build-update-repo local_atl_repo
           flatpak remote-add --user --if-not-exists --no-gpg-verify atl-repo-local local_atl_repo/
           flatpak remote-modify --user --prio=10 atl-repo-local
+          flatpak remote-add --system --if-not-exists --no-gpg-verify atl-repo-local local_atl_repo/
+          flatpak remote-modify --system --prio=10 atl-repo-local
       - name: Setup Flatpak Builder Cache
         uses: actions/cache@v4
         with:
