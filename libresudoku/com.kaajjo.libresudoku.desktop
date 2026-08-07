@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=LibreSudoku
+Exec=libresudoku.sh --uri %u
+Comment=Libre-Sudoku is a Sudoku app on FOSS (unofficial port)
+X-Purism-FormFactor=Workstation;Mobile;
+StartupNotify=true
+Icon=com.kaajjo.libresudoku

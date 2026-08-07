@@ -1,0 +1,63 @@
+app-id: com.kaajjo.libresudoku
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Platform
+base: io.gitlab.android_translation_layer.BaseApp
+base-version: stable
+command: libresudoku.sh
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --socket=pulseaudio
+modules:
+  - name: gbox
+    buildsystem: simple
+    build-commands:
+      - install -D com.kaajjo.libresudoku_7.apk /app/share/libresudoku.apk
+      - install -D libresudoku.sh /app/bin/libresudoku.sh
+      - install -D com.kaajjo.libresudoku.desktop /app/share/applications/com.kaajjo.libresudoku.desktop
+      - install -D icon_Qnu4OABUKMroPcQgu-9eas1qcsZ0QuyHbyUSbdtP3_4=.png /app/share/icons/hicolor/512x512/apps/com.kaajjo.libresudoku.png
+      - install -D com.kaajjo.libresudoku.metainfo.xml /app/share/metainfo/com.kaajjo.libresudoku.metainfo.xml
+    sources:
+      - type: file
+        url: https://f-droid.org/repo/com.kaajjo.libresudoku_7.apk
+        sha256: 526f965491d1e80061aa42b327bb85e7c30b9c697c1cf3ed47f82a5ffd06bb1e
+      - type: file
+        url: https://f-droid.org/repo/com.kaajjo.libresudoku/en-US/icon_Qnu4OABUKMroPcQgu-9eas1qcsZ0QuyHbyUSbdtP3_4=.png
+        sha256: 427bb838005428cae83dc420bbef5e6acd6a72c67442ec876f25126ddb4fdffe
+      - type: file
+        path: libresudoku/libresudoku.sh
+      - type: file
+        path: libresudoku/com.kaajjo.libresudoku.desktop
+      - type: file
+        path: libresudoku/com.kaajjo.libresudoku.metainfo.xml
+
+  - name: run-dex2oat
+    buildsystem: simple
+    build-options:
+      append-ld-library-path: /app/lib/art:/app/lib
+      arch:
+        x86_64:
+          env:
+            arch: x86_64
+        aarch64:
+          env:
+            arch: arm64
+    build-commands:
+      - mkdir -p /app/share/oat/$arch
+      - dex2oat --dex-file=/app/share/libresudoku.apk --oat-file=/app/share/oat/$arch/libresudoku.odex --host
+      - chmod +x /app/share/oat/$arch/libresudoku.odex
+      - mv /app/share/libresudoku.apk libresudoku.apk
+      - zip -d libresudoku.apk "classes*.dex"
+      - mv libresudoku.apk /app/share/libresudoku.apk
+
+  - name: remove-dex2oat
+    buildsystem: simple
+    build-commands:
+      - rm /app/lib/art/libart-compiler.so
+      - rm /app/lib/art/libart-dexlayout.so
+      - rm /app/bin/dex2oat
+      - rm /app/bin/dalvikvm

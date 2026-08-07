@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.kaajjo.libresudoku</id>
+  
+  <name>Libre-Sudoku</name>
+  <summary>Libre-Sudoku is a Sudoku app on FOSS (unofficial port)</summary>
+  
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>0BSD</project_license>
+  
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  
+  <description>
+    <p>
+      Libre-Sudoku is a Sudoku app on FOSS (unofficial port)
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">com.kaajjo.libresudoku.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/kaajjo/LibreSudoku/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg?raw=true</image>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/kaajjo/LibreSudoku/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg?raw=true</image>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/kaajjo/LibreSudoku/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg?raw=true</image>
+    </screenshot>
+  </screenshots>
+</component>
