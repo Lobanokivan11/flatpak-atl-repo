@@ -96,7 +96,7 @@ jobs:
       - name: Add Local ATL Repo with High Priority
         run: |
           flatpak remote-add --user --if-not-exists --no-gpg-verify atl-repo-local local_atl_repo/
-          flatpak remote-modify --user --priority=10 atl-repo-local
+          flatpak remote-modify --user --prio=10 atl-repo-local
       - name: Setup Flatpak Builder Cache
         uses: actions/cache@v4
         with:
