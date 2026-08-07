@@ -123,7 +123,7 @@ jobs:
               cp -uR "$folder"/* combined_repo/ || true
             fi
           done
-          flatpak build-update-repo combined_repo
+          flatpak build-update-repo --gpg-sign=${{ steps.import_gpg.outputs.key_id }} combined_repo
 
       - name: Export Public Key
         run: |
@@ -139,8 +139,9 @@ jobs:
           Homepage=https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}
           Comment=A Custom Repository with Android Translation Layer Apps
           Description=A Custom Repository with Android Translation Layer Apps
-          GPGVerify=false
-          GPGVerifySummary=false
+          GPGVerify=true
+          GPGVerifySummary=true
+          GPGKey=$GPG_BASE64
           EOF
 
       - name: Upload Final Repo Artifact
