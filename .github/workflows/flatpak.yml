@@ -43,26 +43,15 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
-      - name: Import Protected GPG Key
+      - name: Import GPG Key for Manifest Reference
         id: import_gpg
         run: |
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
-          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
-          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
-          gpg-connect-agent reloadagent /bye
-          gpgconf --kill gpg-agent
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -d | gpg --batch --import
           KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5}')
           echo "key_id=$KEY_ID" >> $GITHUB_OUTPUT
-
-      - name: Prime GPG Agent Cache
-        run: |
-          echo "prime_cache" | gpg --batch --yes --pinentry-mode loopback \
-            --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
-            --local-user ${{ steps.import_gpg.outputs.key_id }} \
-            --sign > /dev/null
+          gpg --export --armor $KEY_ID > repo.gpg
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
@@ -71,7 +60,6 @@ jobs:
           cache-key: flatpak-builder-${{ matrix.manifest }}-${{ github.sha }}
           build-bundle: false
           repo-dir: public_repo
-          gpg-sign: ${{ steps.import_gpg.outputs.key_id }}
         env:
           GPG_TTY: /dev/null
 
@@ -97,8 +85,7 @@ jobs:
         with:
           path: all_artifacts
           pattern: flatpak-repo-*
-
-      - name: Import Protected GPG Key
+      - name: Import Protected GPG Key for Final Signing
         id: import_gpg
         run: |
           mkdir -p ~/.gnupg
@@ -141,17 +128,19 @@ jobs:
           [Flatpak Repo]
           Title=Android Translation Layer Apps
           Url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
-          Homepage=https://github.com/${{ github.repository_owner }}
+          Homepage=https://github.com{{ github.repository_owner }}
           Comment=A Custom Repository with Android Translation Layer Apps
           Description=A Custom Repository with Android Translation Layer Apps
           GPGKey=$GPG_BASE64
           EOF
+
       - name: Upload Final Repo Artifact
         uses: actions/upload-artifact@v4
         with:
           name: final-combined-repo
           path: combined_repo/
           retention-days: 1
+
   publish-pages:
     needs: merge-and-sign
     runs-on: ubuntu-latest
