@@ -66,6 +66,7 @@ jobs:
           manifest-path: ${{ matrix.manifest }}
           cache-key: flatpak-builder-${{ matrix.manifest }}-${{ github.sha }}
           build-bundle: false
+          branch: stable
           repo-dir: public_repo
         env:
           GPG_TTY: /dev/null
