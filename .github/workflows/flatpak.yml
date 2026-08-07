@@ -1,0 +1,83 @@
+name: Build and Host Flatpak Repo
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  find-manifests:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps: set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Find all YML manifests
+        id: set-matrix
+        run: |
+          MANIFESTS=$(find . -maxdepth 1 -name "*.yml" -printf '"%p", ' | sed 's/, $//')
+          echo "matrix=[$MANIFESTS]" >> $GITHUB_OUTPUT
+
+  build-flatpak:
+    needs: find-manifests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        manifest: ${{ fromJson(needs.find-manifests.outputs.matrix) }}
+      fail-fast: false
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      options: --privileged
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: ${{ matrix.manifest }}
+          cache-key: flatpak-builder-${{ matrix.manifest }}-${{ github.sha }}
+          build-bundle: false
+          repo-dir: public_repo
+      - name: Upload Temporary Repo Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-repo-${{ strategy.job-index }}
+          path: public_repo/
+          retention-days: 1
+
+  deploy:
+    needs: build-flatpak
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+      - name: Download All Repo Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: combined_repo
+          pattern: flatpak-repo-*
+          merge-multiple: true
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './combined_repo'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
