@@ -118,7 +118,7 @@ jobs:
       - name: Combine and Rebuild Repository Index
         run: |
           mkdir combined_repo
-          flatpak repoinit --title="Android Translation Layer Apps" combined_repo
+          ostree --repo=combined_repo init --mode=archive
           for folder in all_artifacts/flatpak-repo-*/; do
             if [ -d "$folder" ]; then
               echo "Importing apps from $folder..."
