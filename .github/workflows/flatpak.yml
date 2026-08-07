@@ -74,6 +74,7 @@ jobs:
           gpg-sign: ${{ steps.import_gpg.outputs.key_id }}
         env:
           GPG_TTY: /dev/null
+
       - name: Upload Temporary Repo Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -81,7 +82,7 @@ jobs:
           path: public_repo/
           retention-days: 1
 
-  deploy:
+  merge-and-sign:
     needs: build-flatpak
     runs-on: ubuntu-latest
     container:
@@ -90,6 +91,7 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+
       - name: Download All Repo Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -115,6 +117,7 @@ jobs:
             --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
             --local-user ${{ steps.import_gpg.outputs.key_id }} \
             --sign > /dev/null
+
       - name: Combine and Rebuild Repository Index
         run: |
           mkdir combined_repo
@@ -143,6 +146,21 @@ jobs:
           Description=A Custom Repository with Android Translation Layer Apps
           GPGKey=$GPG_BASE64
           EOF
+      - name: Upload Final Repo Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-combined-repo
+          path: combined_repo/
+          retention-days: 1
+  publish-pages:
+    needs: merge-and-sign
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Final Combined Repo
+        uses: actions/download-artifact@v4
+        with:
+          name: final-combined-repo
+          path: ./combined_repo
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
