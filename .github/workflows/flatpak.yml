@@ -46,6 +46,7 @@ jobs:
         id: import_gpg
         run: |
           mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           gpg-connect-agent reloadagent /bye
@@ -62,6 +63,7 @@ jobs:
           build-bundle: false
           repo-dir: public_repo
           gpg-sign: ${{ steps.import_gpg.outputs.key_id }}
+          gpg-args: --pinentry-mode loopback --passphrase "${{ secrets.GPG_PASSPHRASE }}"
         env:
           GPG_TTY: /dev/null
           PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
