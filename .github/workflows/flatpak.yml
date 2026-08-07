@@ -117,6 +117,8 @@ jobs:
             ${{ runner.os }}-flatpak-
       - name: Build Flatpak App (Forced Local BaseApp)
         run: |
+          flatpak build-import-bundle --user local_atl_repo
+          flatpak build-import-bundle --system local_atl_repo
           mkdir -p .flatpak-builder
           flatpak-builder \
             --repo=public_repo \
@@ -127,7 +129,6 @@ jobs:
             --ccache \
             --install-deps-from=flathub \
             --disable-rofiles-fuse \
-            --local-packages=local_atl_repo \
             build_dir \
             ${{ matrix.manifest }}
         env:
