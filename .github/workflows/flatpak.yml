@@ -57,7 +57,7 @@ jobs:
       - name: Add Custom Remote Repository with GPG
         run: |
           REPO_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          flatpak remote-add --user --if-not-exists --gpg-import=/tmp/atl-repo.gpg atl-repo $REPO_URL
+          flatpak remote-add --user --if-not-exists --no-gpg-verify atl-repo $REPO_URL
 
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
@@ -122,7 +122,7 @@ jobs:
               cp -uR "$folder"/* combined_repo/ || true
             fi
           done
-          flatpak build-update-repo --gpg-sign=${{ steps.import_gpg.outputs.key_id }} combined_repo
+          flatpak build-update-repo combined_repo
 
       - name: Export Public Key
         run: |
@@ -138,7 +138,8 @@ jobs:
           Homepage=https://github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}
           Comment=A Custom Repository with Android Translation Layer Apps
           Description=A Custom Repository with Android Translation Layer Apps
-          GPGKey=$GPG_BASE64
+          GPGVerify=false
+          GPGVerifySummary=false
           EOF
 
       - name: Upload Final Repo Artifact
