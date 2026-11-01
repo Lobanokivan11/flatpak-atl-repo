@@ -122,7 +122,7 @@ modules:
     sources:
       - type: git
         url: https://gitlab.com/android_translation_layer/bionic_translation.git
-        commit: ef588129f1b505e62de8750793e44aba98817a98
+        commit: 6253dec7f24a57a94039a088cb436d880e92e3be
         disable-submodules: true
 
   - name: art_standalone
@@ -142,7 +142,7 @@ modules:
     sources:
       - type: git
         url: https://gitlab.com/android_translation_layer/art_standalone.git
-        commit: 66a5d9079b159e9c5819bfeef4a6fff6a5f32719
+        commit: a1edfc40e8cea3644d80e4e776d3fa7fc397a1c2
 
   - name: android-translation-layer
     buildsystem: meson
@@ -171,8 +171,8 @@ modules:
         JAVA_HOME: /usr/lib/sdk/openjdk17/jvm/openjdk-17
     sources:
       - type: git
-        url: https://gitlab.com/android_translation_layer/libopensles-standalone
-        commit: bdb857a4baadbc8c036db85a5da26c5269a751c5
+        url: https://gitlab.com/android_translation_layer/libopensles-standalone.git
+        commit: c6982620c7dadeb90220b23c575b25eeffda765f
 
   - name: run-dex2oat
     buildsystem: simple
