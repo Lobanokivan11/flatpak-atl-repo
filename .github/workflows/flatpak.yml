@@ -145,7 +145,7 @@ jobs:
         with:
           name: flatpak-repo-${{ matrix.arch }}-${{ strategy.job-index }}
           path: public_repo/
-          retention-days: 1
+          retention-days: 30
 
   merge-and-sign:
     needs: [build-baseapp, build-flatpak]
@@ -227,7 +227,7 @@ jobs:
         with:
           name: final-combined-repo
           path: combined_repo/
-          retention-days: 1
+          retention-days: 30
 
   publish-pages:
     needs: merge-and-sign
