@@ -1,9 +1,9 @@
 id: io.gitlab.android_translation_layer.BaseApp
 runtime: org.gnome.Platform
-runtime-version: '50'
+runtime-version: '51'
 sdk: org.gnome.Sdk
 sdk-extensions:
-  - org.freedesktop.Sdk.Extension.openjdk17
+  - org.freedesktop.Sdk.Extension.openjdk25
 # default command and finish-args only for using as commandline application. They are ignored when used as base app
 command: android-translation-layer
 finish-args:
@@ -135,9 +135,9 @@ modules:
         - ____PREFIX=/app
         - ____LIBDIR=lib
         - ____INSTALL_ETC=/app/etc
-      append-path: /usr/lib/sdk/openjdk17/bin
+      append-path: /usr/lib/sdk/openjdk25/bin
       env:
-        JAVA_HOME: /usr/lib/sdk/openjdk17/jvm/openjdk-17
+        JAVA_HOME: /usr/lib/sdk/openjdk25/jvm/openjdk-25
         LIBRARY_PATH: /app/lib
     sources:
       - type: git
@@ -147,9 +147,9 @@ modules:
   - name: android-translation-layer
     buildsystem: meson
     build-options:
-      append-path: /usr/lib/sdk/openjdk17/bin
+      append-path: /usr/lib/sdk/openjdk25/bin
       env:
-        JAVA_HOME: /usr/lib/sdk/openjdk17/jvm/openjdk-17
+        JAVA_HOME: /usr/lib/sdk/openjdk25/jvm/openjdk-25
     sources:
       - type: git
         url: https://gitlab.com/android_translation_layer/android_translation_layer.git
@@ -161,14 +161,14 @@ modules:
     buildsystem: simple
     build-commands:
       - mkdir -p /app/share/java_home/lib/security
-      - install -D /usr/lib/sdk/openjdk17/jvm/openjdk-17/lib/security/cacerts /app/share/ssl/certs/java/cacerts
+      - install -D /usr/lib/sdk/openjdk25/jvm/openjdk-25/lib/security/cacerts /app/share/ssl/certs/java/cacerts
 
   - name: libopensles-standalone
     buildsystem: meson
     build-options:
-      append-path: /usr/lib/sdk/openjdk17/bin
+      append-path: /usr/lib/sdk/openjdk25/bin
       env:
-        JAVA_HOME: /usr/lib/sdk/openjdk17/jvm/openjdk-17
+        JAVA_HOME: /usr/lib/sdk/openjdk25/jvm/openjdk-25
     sources:
       - type: git
         url: https://gitlab.com/android_translation_layer/libopensles-standalone.git

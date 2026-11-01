@@ -18,7 +18,7 @@ jobs:
   build-baseapp:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
       options: --privileged
     outputs:
       has_baseapp: "true"
@@ -78,7 +78,7 @@ jobs:
         manifest: ${{ fromJson(needs.find-manifests.outputs.matrix) }}
       fail-fast: false
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
       options: --privileged
 
     steps:
@@ -147,7 +147,7 @@ jobs:
     needs: [build-baseapp, build-flatpak]
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
       options: --privileged
     steps:
       - name: Checkout Source Code

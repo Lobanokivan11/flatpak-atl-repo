@@ -1,6 +1,6 @@
 app-id: com.gbox.android
 runtime: org.gnome.Platform
-runtime-version: '50'
+runtime-version: '51'
 sdk: org.gnome.Platform
 base: io.gitlab.android_translation_layer.BaseApp
 base-version: stable
