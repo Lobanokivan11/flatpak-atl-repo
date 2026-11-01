@@ -16,6 +16,9 @@ concurrency:
 
 jobs:
   build-baseapp:
+    strategy:
+      matrix:
+        arch: [x86_64, aarch64]
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
@@ -42,7 +45,7 @@ jobs:
             --force-clean \
             --state-dir=.flatpak-builder \
             --default-branch=stable \
-            --arch=x86_64 \
+            --arch=${{ matrix.arch }} \
             --disable-rofiles-fuse \
             --ccache \
             --install-deps-from=flathub \
@@ -53,9 +56,9 @@ jobs:
       - name: Upload BaseApp Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: baseapp-core-package
+          name: baseapp-core-package-${{ matrix.arch }}
           path: baseapp_repo/
-          retention-days: 1
+          retention-days: 30
   find-manifests:
     runs-on: ubuntu-latest
     outputs:
@@ -76,6 +79,7 @@ jobs:
     strategy:
       matrix:
         manifest: ${{ fromJson(needs.find-manifests.outputs.matrix) }}
+        arch: [x86_64, aarch64]
       fail-fast: false
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
@@ -97,7 +101,7 @@ jobs:
       - name: Download Fresh Local BaseApp
         uses: actions/download-artifact@v4
         with:
-          name: baseapp-core-package
+          name: baseapp-core-package-${{ matrix.arch }}
           path: local_atl_repo
       - name: Add Local ATL Repo with High Priority
         run: |
@@ -118,16 +122,16 @@ jobs:
       - name: Build Flatpak App (Forced Local BaseApp)
         run: |
           flatpak remote-add --user --if-not-exists --no-gpg-verify local-source local_atl_repo/
-          flatpak install --user -y local-source io.gitlab.android_translation_layer.BaseApp
+          flatpak install --user --arch=${{ matrix.arch }} -y local-source io.gitlab.android_translation_layer.BaseApp
           flatpak remote-add --system --if-not-exists --no-gpg-verify local-source local_atl_repo/
-          flatpak install --system -y local-source io.gitlab.android_translation_layer.BaseApp
+          flatpak install --system --arch=${{ matrix.arch }} -y local-source io.gitlab.android_translation_layer.BaseApp
           mkdir -p .flatpak-builder
           flatpak-builder \
             --repo=public_repo \
             --force-clean \
             --state-dir=.flatpak-builder \
             --default-branch=stable \
-            --arch=x86_64 \
+            --arch=${{ matrix.arch }} \
             --ccache \
             --install-deps-from=flathub \
             --disable-rofiles-fuse \
@@ -139,7 +143,7 @@ jobs:
       - name: Upload Temporary Repo Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: flatpak-repo-${{ strategy.job-index }}
+          name: flatpak-repo-${{ matrix.arch }}-${{ strategy.job-index }}
           path: public_repo/
           retention-days: 1
 
@@ -155,7 +159,7 @@ jobs:
       - name: Download BaseApp
         uses: actions/download-artifact@v4
         with:
-          name: baseapp-core-package
+          name: baseapp-core-package-*
           path: all_artifacts/baseapp
       - name: Download All Repo Artifacts
         uses: actions/download-artifact@v4
