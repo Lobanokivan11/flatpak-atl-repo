@@ -79,6 +79,30 @@ modules:
     config-opts:
       - -DCMAKE_INSTALL_LIBDIR=lib
 
+  - name: gtk4-layer-shell
+    buildsystem: meson
+    builddir: true
+    config-opts:
+      - --prefix=/app
+      - --libdir=lib
+      - -Ddocs=false
+      - -Dtests=false
+      - -Dvapi=false
+    sources:
+      - type: git
+        url: https://github.com/wmww/gtk4-layer-shell.git
+        commit: 69ad9a02a8c31ac2d3db6710f43b3d8434559e46
+
+  - name: android-build-tools
+    buildsystem: simple
+    build-commands:
+      - install -D android-14/aapt /app/bin/aapt
+      - install -D android-14/aapt2 /app/bin/aapt2
+    sources:
+      - type: archive
+        url: https://dl.google.com/android/repository/build-tools_r34-linux.zip
+        sha256: e858c4b60069d0431051b225d384413b1643e1289b00a4825aed347f25bd510f
+
   - name: wolfssl
     buildsystem: autotools
     config-opts:
