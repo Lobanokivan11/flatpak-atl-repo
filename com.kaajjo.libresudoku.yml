@@ -13,7 +13,7 @@ finish-args:
   - --device=dri
   - --socket=pulseaudio
 modules:
-  - name: gbox
+  - name: libresudoku
     buildsystem: simple
     build-commands:
       - install -D com.kaajjo.libresudoku_7.apk /app/share/libresudoku.apk
