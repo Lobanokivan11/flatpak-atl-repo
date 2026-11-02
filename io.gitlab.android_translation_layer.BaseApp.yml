@@ -170,6 +170,8 @@ modules:
 
   - name: android-translation-layer
     buildsystem: meson
+    config-opts:
+      - -Ddownload_tool_deps=false
     build-options:
       append-path: /usr/lib/sdk/openjdk25/bin
       env:
