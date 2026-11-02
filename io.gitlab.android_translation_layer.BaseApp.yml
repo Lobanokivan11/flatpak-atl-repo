@@ -80,15 +80,14 @@ modules:
         url: https://github.com/wmww/gtk4-layer-shell.git
         commit: 69ad9a02a8c31ac2d3db6710f43b3d8434559e46
 
-  - name: android-build-tools
+  - name: aapt
     buildsystem: simple
     build-commands:
-      - install -D aapt /app/bin/aapt
-      - install -D aapt2 /app/bin/aapt2
+      - install -D aapt_64 /app/bin/aapt
     sources:
       - type: archive
-        url: https://dl.google.com/android/repository/build-tools_r34-linux.zip
-        sha256: e858c4b60069d0431051b225d384413b1643e1289b00a4825aed347f25bd510f
+        url: https://raw.githubusercontent.com/VindroidH/prebuilt-binaries-aapt-aapt_64-aapt2-aapt2_64-windows-linux-macosx/refs/heads/master/linux/aapt_64.zip
+        sha256: f8e6d7b081c3f9f73b6d8d4d7651f0686deeeafb28fce2c3c3246b344e89a7d6
 
   - name: wolfssl
     buildsystem: autotools
