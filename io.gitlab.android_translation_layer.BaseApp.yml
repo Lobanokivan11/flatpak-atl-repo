@@ -3,7 +3,7 @@ runtime: org.gnome.Platform
 runtime-version: '51'
 sdk: org.gnome.Sdk
 sdk-extensions:
-  - org.freedesktop.Sdk.Extension.openjdk25
+  - org.freedesktop.Sdk.Extension.openjdk17
 # default command and finish-args only for using as commandline application. They are ignored when used as base app
 command: android-translation-layer
 finish-args:
@@ -111,8 +111,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/wolfSSL/wolfssl.git
-        tag: v5.9.2-stable
-        commit: ac01707f552c611fbd135cc723b2682b3e7f80f2
+        commit: b1038eec768f7df0a7f3eb6b242df2b018ad1df8
 
   - name: vixl
     buildsystem: meson
@@ -122,9 +121,9 @@ modules:
     only-arches:
       - aarch64
     sources:
-      - type: archive
-        url: https://github.com/Linaro/vixl/archive/refs/tags/8.0.0.tar.gz
-        sha256: 6aebbebcd9b66686ea246b450af529e1fc50fe25209522cc9ab42beae2377d38
+      - type: git
+        url: https://gitlab.arm.com/runtimes/vixl.git
+        commit: 7d9b0ee4d907b816c51288d73b5d1560fac0b2e0
       - type: patch
         path: patches/vixl_meson_support.patch
 
@@ -134,7 +133,7 @@ modules:
       - type: git
         url: https://gitlab.com/android_translation_layer/bionic_translation.git
         commit: 6253dec7f24a57a94039a088cb436d880e92e3be
-        disable-submodules: true
+        disable-submodules: false
 
   - name: art_standalone
     no-autogen: true
@@ -146,9 +145,9 @@ modules:
         - ____PREFIX=/app
         - ____LIBDIR=lib
         - ____INSTALL_ETC=/app/etc
-      append-path: /usr/lib/sdk/openjdk25/bin
+      append-path: /usr/lib/sdk/openjdk17/bin
       env:
-        JAVA_HOME: /usr/lib/sdk/openjdk25/jvm/openjdk-25
+        JAVA_HOME: /usr/lib/sdk/openjdk17/jvm/openjdk-17
         LIBRARY_PATH: /app/lib
     sources:
       - type: git
@@ -160,9 +159,9 @@ modules:
     config-opts:
       - -Ddownload_tool_deps=true
     build-options:
-      append-path: /usr/lib/sdk/openjdk25/bin
+      append-path: /usr/lib/sdk/openjdk17/bin
       env:
-        JAVA_HOME: /usr/lib/sdk/openjdk25/jvm/openjdk-25
+        JAVA_HOME: /usr/lib/sdk/openjdk17/jvm/openjdk-17
     sources:
       - type: git
         url: https://gitlab.com/android_translation_layer/android_translation_layer.git
@@ -179,9 +178,9 @@ modules:
   - name: libopensles-standalone
     buildsystem: meson
     build-options:
-      append-path: /usr/lib/sdk/openjdk25/bin
+      append-path: /usr/lib/sdk/openjdk17/bin
       env:
-        JAVA_HOME: /usr/lib/sdk/openjdk25/jvm/openjdk-25
+        JAVA_HOME: /usr/lib/sdk/openjdk17/jvm/openjdk-17
     sources:
       - type: git
         url: https://gitlab.com/android_translation_layer/libopensles-standalone.git
