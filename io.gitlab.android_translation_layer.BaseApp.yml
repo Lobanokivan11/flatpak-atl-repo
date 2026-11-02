@@ -218,6 +218,12 @@ modules:
       - dex2oat --dex-file=/app/lib/java/dex/android_translation_layer/api-impl.jar
         --oat-file=/app/lib/java/dex/android_translation_layer/oat/$arch/api-impl.odex
         --host
+      - dex2oat --dex-file=/app/lib/java/dex/android_translation_layer/ghax.jar
+        --oat-file=/app/lib/java/dex/android_translation_layer/oat/$arch/ghax.odex
+        --host
+      - dex2oat --dex-file=/app/lib/java/dex/android_translation_layer/gstub.jar
+        --oat-file=/app/lib/java/dex/android_translation_layer/oat/$arch/gstub.odex
+        --host
       # mark it as executable, so that flatpak builder extracts debug info automatically
       - chmod +x /app/lib/java/dex/android_translation_layer/oat/$arch/*.odex
 
