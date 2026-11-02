@@ -20,7 +20,6 @@ cleanup:
   - '*.a'
   - '*.la'
   - /lib/libopenxr_loader.so*
-  - /lib/libportal-*
   - /lib/cmake
   - /lib/girepository-1.0
   - /lib/java/core-all_classes.jar
@@ -38,8 +37,8 @@ modules:
     buildsystem: autotools
     sources:
       - type: archive
-        url: https://libbsd.freedesktop.org/releases/libmd-1.2.0.tar.xz
-        sha256: ac15ffb8430502fbaccdec66c5a82ee0eab0b0f36220df56710feadfeb13d0a0
+        url: https://libbsd.freedesktop.org/releases/libmd-1.3.0.tar.xz
+        sha256: fc0f1eb6b6766470326f2c014693809190e67dba84274a6fbae9d4912d066706
         x-checker-data:
           type: anitya
           project-id: 15525
@@ -57,25 +56,13 @@ modules:
           stable-only: true
           url-template: https://libbsd.freedesktop.org/releases/libbsd-$version.tar.xz
 
-  - name: libportal
-    buildsystem: meson
-    sources:
-      - type: archive
-        url: https://github.com/flatpak/libportal/archive/0.10.0.tar.gz
-        sha256: e1b6913c6d9015bfa918ace86f82c30940982add97aed9c18cc929c5327054fd
-        x-checker-data:
-          type: anitya
-          project-id: 230124
-          stable-only: true
-          url-template: https://github.com/flatpak/libportal/archive/$version.tar.gz
-
   - name: openxr
     buildsystem: cmake-ninja
     sources:
       - type: git
         url: https://github.com/KhronosGroup/OpenXR-SDK.git
-        tag: release-1.1.62
-        commit: 57af7fc61f9f2d492580cb28aab6d0ea59d8d417
+        tag: release-1.1.65
+        commit: 24a1f2b92d212501a2b1b8d30ffd53abf55fcfa8
     config-opts:
       - -DCMAKE_INSTALL_LIBDIR=lib
 
