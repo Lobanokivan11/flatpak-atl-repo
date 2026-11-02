@@ -96,8 +96,8 @@ modules:
   - name: android-build-tools
     buildsystem: simple
     build-commands:
-      - install -D android-14/aapt /app/bin/aapt
-      - install -D android-14/aapt2 /app/bin/aapt2
+      - install -D aapt /app/bin/aapt
+      - install -D aapt2 /app/bin/aapt2
     sources:
       - type: archive
         url: https://dl.google.com/android/repository/build-tools_r34-linux.zip
