@@ -174,7 +174,7 @@ modules:
     buildsystem: simple
     build-commands:
       - mkdir -p /app/share/java_home/lib/security
-      - install -D /usr/lib/sdk/openjdk25/jvm/openjdk-25/lib/security/cacerts /app/share/ssl/certs/java/cacerts
+      - install -D /usr/lib/sdk/openjdk17/jvm/openjdk-17/lib/security/cacerts /app/share/ssl/certs/java/cacerts
 
   - name: libopensles-standalone
     buildsystem: meson
