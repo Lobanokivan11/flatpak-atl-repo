@@ -158,6 +158,8 @@ modules:
     config-opts:
       - -Ddownload_tool_deps=true
     build-options:
+      build-args:
+        - --share=network
       append-path: /usr/lib/sdk/openjdk17/bin
       env:
         JAVA_HOME: /usr/lib/sdk/openjdk17/jvm/openjdk-17
